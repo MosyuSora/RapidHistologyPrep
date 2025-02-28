@@ -1,0 +1,172 @@
+Added Component: Designator=C1(CAP_UKL_5X11_NCH)
+Add component (AddParameter): Name = "Mfr_Name"; Value = "Nichicon"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "RefDes"; Value = ""; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Type"; Value = ""; VariantName = "[No Variations]"
+Added Component: Designator=C2(CAP_UKL_5X11_NCH)
+Add component (AddParameter): Name = "Mfr_Name"; Value = "Nichicon"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "RefDes"; Value = ""; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Type"; Value = ""; VariantName = "[No Variations]"
+Added Component: Designator=J1(DG12810-5.0)
+Added Component: Designator=LED_B1(WL-TMRC_D3.95H5.3)
+Add component (AddParameter): Name = "Case/Size Code"; Value = "3mm"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Category"; Value = "Signal LEDs"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Chip Technology"; Value = "AlInGaP"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "ComponentLink1Description"; Value = "Website Link"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "ComponentLink1URL"; Value = "https://www.we-online.com/redexpert/article/151031SS04000?ad"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "ComponentLink2Description"; Value = "Datasheet Link"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "ComponentLink2URL"; Value = "https://www.we-online.com/redexpert/spec/151031SS04000?ad"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Diameter"; Value = "3.95mm"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Dominant Wavelength"; Value = "635nm"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Emitting Color"; Value = "Super Red"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Forward Voltage"; Value = "2V"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Height"; Value = "5.3mm"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Luminous Intensity"; Value = "160mcd"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Manufacturer"; Value = "Wurth Elektronik"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Manufacturer Part Number"; Value = "151031SS04000"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Match Code"; Value = "WL-TMRC"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Mount"; Value = "Through Hole"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Operating Temperature Max"; Value = "85буC"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Operating Temperature Min"; Value = "-40буC"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Packaging"; Value = "Bulk"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Peak Wavelength"; Value = "640nm"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Viewing Angle"; Value = "40бу"; VariantName = "[No Variations]"
+Added Component: Designator=LED_G1(WL-TMRC_D3.95H5.3)
+Add component (AddParameter): Name = "Case/Size Code"; Value = "3mm"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Category"; Value = "Signal LEDs"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Chip Technology"; Value = "AlInGaP"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "ComponentLink1Description"; Value = "Website Link"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "ComponentLink1URL"; Value = "https://www.we-online.com/redexpert/article/151031SS04000?ad"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "ComponentLink2Description"; Value = "Datasheet Link"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "ComponentLink2URL"; Value = "https://www.we-online.com/redexpert/spec/151031SS04000?ad"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Diameter"; Value = "3.95mm"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Dominant Wavelength"; Value = "635nm"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Emitting Color"; Value = "Super Red"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Forward Voltage"; Value = "2V"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Height"; Value = "5.3mm"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Luminous Intensity"; Value = "160mcd"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Manufacturer"; Value = "Wurth Elektronik"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Manufacturer Part Number"; Value = "151031SS04000"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Match Code"; Value = "WL-TMRC"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Mount"; Value = "Through Hole"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Operating Temperature Max"; Value = "85буC"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Operating Temperature Min"; Value = "-40буC"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Packaging"; Value = "Bulk"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Peak Wavelength"; Value = "640nm"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Viewing Angle"; Value = "40бу"; VariantName = "[No Variations]"
+Added Component: Designator=LED_R1(WL-TMRC_D3.95H5.3)
+Add component (AddParameter): Name = "Case/Size Code"; Value = "3mm"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Category"; Value = "Signal LEDs"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Chip Technology"; Value = "AlInGaP"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "ComponentLink1Description"; Value = "Website Link"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "ComponentLink1URL"; Value = "https://www.we-online.com/redexpert/article/151031SS04000?ad"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "ComponentLink2Description"; Value = "Datasheet Link"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "ComponentLink2URL"; Value = "https://www.we-online.com/redexpert/spec/151031SS04000?ad"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Diameter"; Value = "3.95mm"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Dominant Wavelength"; Value = "635nm"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Emitting Color"; Value = "Super Red"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Forward Voltage"; Value = "2V"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Height"; Value = "5.3mm"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Luminous Intensity"; Value = "160mcd"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Manufacturer"; Value = "Wurth Elektronik"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Manufacturer Part Number"; Value = "151031SS04000"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Match Code"; Value = "WL-TMRC"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Mount"; Value = "Through Hole"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Operating Temperature Max"; Value = "85буC"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Operating Temperature Min"; Value = "-40буC"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Packaging"; Value = "Bulk"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Peak Wavelength"; Value = "640nm"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Viewing Angle"; Value = "40бу"; VariantName = "[No Variations]"
+Added Component: Designator=R1(STA_CF14_STP)
+Add component (AddParameter): Name = "Mfr_Name"; Value = "Stackpole International"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "RefDes"; Value = ""; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Type"; Value = ""; VariantName = "[No Variations]"
+Added Component: Designator=R2(STA_CF14_STP)
+Add component (AddParameter): Name = "Mfr_Name"; Value = "Stackpole International"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "RefDes"; Value = ""; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Type"; Value = ""; VariantName = "[No Variations]"
+Added Component: Designator=R3(STA_CF14_STP)
+Add component (AddParameter): Name = "Mfr_Name"; Value = "Stackpole International"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "RefDes"; Value = ""; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Type"; Value = ""; VariantName = "[No Variations]"
+Added Component: Designator=R4(STA_CF14_STP)
+Add component (AddParameter): Name = "Mfr_Name"; Value = "Stackpole International"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "RefDes"; Value = ""; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Type"; Value = ""; VariantName = "[No Variations]"
+Added Component: Designator=R5(STA_CF14_STP)
+Add component (AddParameter): Name = "Mfr_Name"; Value = "Stackpole International"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "RefDes"; Value = ""; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Type"; Value = ""; VariantName = "[No Variations]"
+Added Component: Designator=R6(STA_CF14_STP)
+Add component (AddParameter): Name = "Mfr_Name"; Value = "Stackpole International"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "RefDes"; Value = ""; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Type"; Value = ""; VariantName = "[No Variations]"
+Add Component: Footprint Not Found SW_TS02-66-43-BK-100-LCR-D
+Added Component: Designator=U1(PCBComponent_1)
+Added Pin To Net: NetName=SW Pin=C2-1
+Added Pin To Net: NetName=HEAT_PWM Pin=J1-3
+Added Pin To Net: NetName=COOL_PWM Pin=J1-4
+Added Pin To Net: NetName=SCL Pin=J1-5
+Added Pin To Net: NetName=SDA Pin=J1-6
+Added Pin To Net: NetName=TX Pin=J1-7
+Added Pin To Net: NetName=RX Pin=J1-8
+Added Pin To Net: NetName=VCC Pin=R1-2
+Added Pin To Net: NetName=LED_R Pin=R2-2
+Added Pin To Net: NetName=LED_G Pin=R3-2
+Added Pin To Net: NetName=LED_B Pin=R4-2
+Added Pin To Net: NetName=VCC Pin=R6-1
+Added Pin To Net: NetName=SW Pin=R6-2
+Add Pin To Net: Unknown Pin: Pin S1-1
+Added Pin To Net: NetName=TX Pin=U1-1
+Added Pin To Net: NetName=RX Pin=U1-2
+Added Pin To Net: NetName=SW Pin=U1-5
+Added Pin To Net: NetName=LED_B Pin=U1-11
+Added Pin To Net: NetName=HEAT_PWM Pin=U1-13
+Added Pin To Net: NetName=COOL_PWM Pin=U1-14
+Added Pin To Net: NetName=LED_G Pin=U1-15
+Added Pin To Net: NetName=LED_R Pin=U1-16
+Added Pin To Net: NetName=SDA Pin=U1-23
+Added Pin To Net: NetName=SCL Pin=U1-24
+Added Pin To Net: NetName=VCC Pin=U1-27
+Added Pin To Net: NetName=GND Pin=C1-2
+Added Pin To Net: NetName=GND Pin=C2-2
+Added Pin To Net: NetName=GND Pin=J1-2
+Added Pin To Net: NetName=GND Pin=J1-9
+Added Pin To Net: NetName=GND Pin=J1-10
+Added Pin To Net: NetName=GND Pin=LED_B1-2
+Added Pin To Net: NetName=GND Pin=LED_G1-2
+Added Pin To Net: NetName=GND Pin=LED_R1-2
+Added Pin To Net: NetName=GND Pin=U1-4
+Added Pin To Net: NetName=GND Pin=U1-29
+Added Net: Name=GND
+Added Pin To Net: NetName=NetLED_B1_1 Pin=LED_B1-1
+Added Pin To Net: NetName=NetLED_B1_1 Pin=R4-1
+Added Net: Name=NetLED_B1_1
+Added Pin To Net: NetName=NetLED_G1_1 Pin=LED_G1-1
+Added Pin To Net: NetName=NetLED_G1_1 Pin=R3-1
+Added Net: Name=NetLED_G1_1
+Added Pin To Net: NetName=NetLED_R1_1 Pin=LED_R1-1
+Added Pin To Net: NetName=NetLED_R1_1 Pin=R2-1
+Added Net: Name=NetLED_R1_1
+Added Pin To Net: NetName=TRM_PIN Pin=R5-2
+Added Pin To Net: NetName=TRM_PIN Pin=U1-22
+Added Net: Name=TRM_PIN
+Added Pin To Net: NetName=TRM Pin=C1-1
+Added Pin To Net: NetName=TRM Pin=J1-1
+Added Pin To Net: NetName=TRM Pin=R1-1
+Added Pin To Net: NetName=TRM Pin=R5-1
+Added Net: Name=TRM
+Added Member To Class: ClassName=Schmatics_Hist_Prep Member=Component C1 100uF
+Added Member To Class: ClassName=Schmatics_Hist_Prep Member=Component C2 0.1uF
+Added Member To Class: ClassName=Schmatics_Hist_Prep Member=Component J1 CON10
+Added Member To Class: ClassName=Schmatics_Hist_Prep Member=Component LED_B1 Super Red, 2V, 40бу
+Added Member To Class: ClassName=Schmatics_Hist_Prep Member=Component LED_G1 Super Red, 2V, 40бу
+Added Member To Class: ClassName=Schmatics_Hist_Prep Member=Component LED_R1 Super Red, 2V, 40бу
+Added Member To Class: ClassName=Schmatics_Hist_Prep Member=Component R1 10K
+Added Member To Class: ClassName=Schmatics_Hist_Prep Member=Component R2 2.2
+Added Member To Class: ClassName=Schmatics_Hist_Prep Member=Component R3 10K
+Added Member To Class: ClassName=Schmatics_Hist_Prep Member=Component R4 10K
+Added Member To Class: ClassName=Schmatics_Hist_Prep Member=Component R5 330
+Added Member To Class: ClassName=Schmatics_Hist_Prep Member=Component R6 4.7K
+Add Class Member: Failed to add class member : Component S1 TS02-66-43-BK-100-LCR-D
+Added Member To Class: ClassName=Schmatics_Hist_Prep Member=Component U1 Arduino Nano
+Added Rule: Name=Schematic Supply Nets_2

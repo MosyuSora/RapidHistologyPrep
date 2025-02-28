@@ -1,0 +1,32 @@
+Added Component: Designator=J2(sip10)
+Added Pin To Net: NetName=A0 Pin=J2-10
+Added Pin To Net: NetName=A0 Pin=U1-19
+Added Net: Name=A0
+Added Pin To Net: NetName=A1 Pin=J2-9
+Added Pin To Net: NetName=A1 Pin=U1-20
+Added Net: Name=A1
+Added Pin To Net: NetName=A2 Pin=J2-8
+Added Pin To Net: NetName=A2 Pin=U1-21
+Added Net: Name=A2
+Added Pin To Net: NetName=A6 Pin=J2-7
+Added Pin To Net: NetName=A6 Pin=U1-25
+Added Net: Name=A6
+Added Pin To Net: NetName=A7 Pin=J2-6
+Added Pin To Net: NetName=A7 Pin=U1-26
+Added Net: Name=A7
+Added Pin To Net: NetName=D3 Pin=J2-1
+Added Pin To Net: NetName=D3 Pin=U1-6
+Added Net: Name=D3
+Added Pin To Net: NetName=D4 Pin=J2-2
+Added Pin To Net: NetName=D4 Pin=U1-7
+Added Net: Name=D4
+Added Pin To Net: NetName=D5 Pin=J2-3
+Added Pin To Net: NetName=D5 Pin=U1-8
+Added Net: Name=D5
+Added Pin To Net: NetName=D6 Pin=J2-4
+Added Pin To Net: NetName=D6 Pin=U1-9
+Added Net: Name=D6
+Added Pin To Net: NetName=D7 Pin=J2-5
+Added Pin To Net: NetName=D7 Pin=U1-10
+Added Net: Name=D7
+Added Member To Class: ClassName=Schmatics_Hist_Prep Member=Component J2 CON10

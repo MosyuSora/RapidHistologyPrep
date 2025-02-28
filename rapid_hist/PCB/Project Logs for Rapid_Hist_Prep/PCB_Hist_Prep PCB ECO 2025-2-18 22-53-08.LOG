@@ -1,0 +1,53 @@
+Added Component: Designator=D1(DIODE0.4A)
+Added Component: Designator=D2(DIODE0.4A)
+Added Component: Designator=D3(DIODE0.4A)
+Added Component: Designator=J1(DG12810-5.0)
+Added Component: Designator=S1(SW_TS02-66-43-BK-100-LCR-D)
+Add component (AddParameter): Name = "Availability"; Value = "In Stock"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Check_prices"; Value = "https://www.snapeda.com/parts/TS02-66-43-BK-100-LCR-D/CUI+Devices/view-part/?ref=eda"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "CUI_purchase_URL"; Value = "https://www.cuidevices.com/product/switches/tactile-switches/ts02-series?utm_source=snapeda.com&utm_medium=referral&utm_campaign=snapedaBOM"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "MF"; Value = "CUI Devices"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "MP"; Value = "TS02-66-43-BK-100-LCR-D"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Package"; Value = "None"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Price"; Value = "None"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Purchase-URL"; Value = "https://pricing.snapeda.com/search/part/TS02-66-43-BK-100-LCR-D/?ref=eda"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "SnapEDA_Link"; Value = "https://www.snapeda.com/parts/TS02-66-43-BK-100-LCR-D/CUI+Devices/view-part/?ref=snap"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Value"; Value = ""; VariantName = "[No Variations]"
+Add Component: Footprint Not Found PCBComponent_1
+Added Pin To Net: NetName=COOL_PWM Pin=J1-4
+Added Net: Name=COOL_PWM
+Added Pin To Net: NetName=HEAT_PWM Pin=J1-3
+Added Net: Name=HEAT_PWM
+Added Net: Name=LED_B
+Added Net: Name=LED_G
+Added Net: Name=LED_R
+Added Pin To Net: NetName=NetD1_A Pin=D1-A
+Added Net: Name=NetD1_A
+Added Pin To Net: NetName=NetD2_A Pin=D2-A
+Added Net: Name=NetD2_A
+Added Pin To Net: NetName=NetD3_A Pin=D3-A
+Added Net: Name=NetD3_A
+Added Pin To Net: NetName=RX Pin=J1-8
+Added Net: Name=RX
+Added Pin To Net: NetName=SCL Pin=J1-5
+Added Net: Name=SCL
+Added Pin To Net: NetName=SDA Pin=J1-6
+Added Net: Name=SDA
+Added Pin To Net: NetName=SW Pin=S1-1
+Added Net: Name=SW
+Added Pin To Net: NetName=TRM+ Pin=J1-1
+Added Net: Name=TRM+
+Added Pin To Net: NetName=TRM- Pin=D1-K
+Added Pin To Net: NetName=TRM- Pin=D2-K
+Added Pin To Net: NetName=TRM- Pin=D3-K
+Added Pin To Net: NetName=TRM- Pin=J1-2
+Added Pin To Net: NetName=TRM- Pin=J1-9
+Added Pin To Net: NetName=TRM- Pin=J1-10
+Added Pin To Net: NetName=TRM- Pin=S1-3
+Added Net: Name=TRM-
+Added Pin To Net: NetName=TX Pin=J1-7
+Added Net: Name=TX
+Added Net: Name=VCC
+Added Class: Name=Schmatics_Hist_Prep
+Added Rule: Name=Schematic Supply Nets
+Added Rule: Name=Schematic Supply Nets_1

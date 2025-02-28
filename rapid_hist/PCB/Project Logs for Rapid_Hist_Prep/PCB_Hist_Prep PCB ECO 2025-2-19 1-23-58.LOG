@@ -1,0 +1,12 @@
+Added Component: Designator=J1(sip10)
+Added Pin To Net: NetName=TRM Pin=J1-1
+Added Pin To Net: NetName=GND Pin=J1-2
+Added Pin To Net: NetName=HEAT_PWM Pin=J1-3
+Added Pin To Net: NetName=COOL_PWM Pin=J1-4
+Added Pin To Net: NetName=SCL Pin=J1-5
+Added Pin To Net: NetName=SDA Pin=J1-6
+Added Pin To Net: NetName=TX Pin=J1-7
+Added Pin To Net: NetName=RX Pin=J1-8
+Added Pin To Net: NetName=GND Pin=J1-9
+Added Pin To Net: NetName=GND Pin=J1-10
+Added Member To Class: ClassName=Schmatics_Hist_Prep Member=Component J1 CON10
