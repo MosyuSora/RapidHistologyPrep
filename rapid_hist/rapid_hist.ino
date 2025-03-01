@@ -1,12 +1,3 @@
-//0.1  加入PID类，readTemp和主函数实现
-//0.2  加入MedianFilter解决温度变化剧烈问题
-//0.3  按钮+红绿灯指示双加热状态
-//0.4  调整了LED逻辑，通过快慢闪表示加热模式 绿色作为系统告警灯，蓝色作为备用。将readTemp修改为非阻塞式采样。将全局变量打包为名称空间。主函数各功能区分打包。PID引入Integral Windup
-
-
-
-
-
 #include <Wire.h>
 
 #define HEAT_PIN 10         // 加热器 PWM 控制（未测试加热部分）
@@ -54,16 +45,17 @@ class PIDController {
 private:
     float Kp, Ki, Kd;    // PID 参数
     float setpoint;      // 目标温度
-    float sum_error;     // 积分累计
-    float last_error;    // 上一次误差（用于微分项）
+    float sumError;     // 积分累计
+    float lastError;    // 上一次误差（用于微分项）
+    float dutyRatio;
 public:
     PIDController(float kp, float ki, float kd, float target)
-      : Kp(kp), Ki(ki), Kd(kd), setpoint(target), sum_error(0), last_error(0) {}
+      : Kp(kp), Ki(ki), Kd(kd), setpoint(target), sumError(0), lastError(0) ,dutyRatio(0){}
 
     void setTarget(float target) {
       setpoint = target;
-      sum_error = 0;
-      last_error = 0;
+      sumError = 0;
+      lastError = 0;
     }
 
     int compute(float temperature) {
@@ -71,27 +63,29 @@ public:
       float P_out = Kp * error;
       float maxIntegral = 100;  // 设定一个合适的积分上限
       if (abs(error) < 1.0) {  // 误差足够小时，才允许积分作用
-        sum_error += error;
-        constrain(sum_error, -maxIntegral, maxIntegral);
+        sumError += error;
+        sumError = constrain(sumError, -maxIntegral, maxIntegral);
       }   
-      float I_out = Ki * sum_error;
-      float derivative = error - last_error;
+      float I_out = Ki * sumError;
+      float derivative = error - lastError;
       float D_out = Kd * derivative;
       float output = constrain(P_out + I_out + D_out, 0, 255);
-      last_error = error;
+      lastError = error;
 
       // 调试输出占空比百分比
-      float dutyRatio = 100 * output / 255;
+      dutyRatio = 100 * output / 255;
+      return (int)output;
+    }
+    void ratioSerialPrint(){
       Serial.print("Duty Ratio: ");
       Serial.println(dutyRatio);
-
-      return (int)output;
     }
 };
 
 /*加热相关全局变量名称空间*/
 namespace heatingPara{
   float targetTemp = 40.0; // 初始目标温度
+  uint16_t tempSetpointCnt = 0;//用于温度达成判断逻辑
   float p = 15, i = 0.02, d = 0.5;
   PIDController HeatPID(p, i, d, targetTemp);//实例化类
 
@@ -117,7 +111,7 @@ float readTemperature(int sampleInterval = 1000) {
   static int adcIndex = 0;
   static int adcReadings[FILTER_SIZE];
   
-  // 硬件参数（与原代码一致）
+  // 硬件参数
   const float knownResistor = 9840.0;
   const float nominalResistance = 100000.0;
   const float nominalTemp = 25.0 + 273.15;
@@ -136,7 +130,7 @@ float readTemperature(int sampleInterval = 1000) {
 
     case SAMPLING:
       if (adcIndex < FILTER_SIZE) {
-        // 非阻塞采样（原delay(2)改为条件判断）
+        // 非阻塞采样
         static unsigned long lastADC = 0;
         if (millis() - lastADC >= 2) {
           adcReadings[adcIndex++] = analogRead(THERMISTOR_PIN);
@@ -166,6 +160,7 @@ float readTemperature(int sampleInterval = 1000) {
       Serial.println(thermistorR);
       Serial.print("Temperature: ");
       Serial.println(temp);
+      heatingPara::HeatPID.ratioSerialPrint();
 
       // 准备下次采样
       state = IDLE;
@@ -182,12 +177,12 @@ void handleButtonPress() {
         // 切换目标温度
         heatingPara::targetTemp = (heatingPara::targetTemp == 40.0) ? 60.0 : 40.0;
         heatingPara::HeatPID.setTarget(heatingPara::targetTemp);
-
-        Serial.print("New targetTemp: ");
-        Serial.println(heatingPara::targetTemp);
-
-        // 根据目标温度更新 LED 闪烁频率
+        // 根据目标温度红灯闪烁频率
         ledPara::blinkInterval = (heatingPara::targetTemp == 40.0) ? 1000 : 200; // 低温慢闪，高温快闪
+        // 熄灭蓝灯，重置设定值检测
+        digitalWrite(LED_BLUE_PIN, LOW);
+        heatingPara::tempSetpointCnt=0;
+
         
     }
     buttonPara::lastButtonState = reading;
@@ -195,12 +190,17 @@ void handleButtonPress() {
 
 /*控制 LED 闪烁函数*/
 void updateLEDStatus() {
+  //红灯逻辑：根据给的blinkInterval闪烁
     unsigned long currentMillis = millis();
-    unsigned long halfInterval = ledPara::blinkInterval / 2; // 完整周期 → 单次状态时间
+    unsigned long halfInterval = ledPara::blinkInterval / 2; 
     if (currentMillis - ledPara::lastBlinkTime >= halfInterval) {
         ledPara::lastBlinkTime = currentMillis;
         ledPara::ledState = !(ledPara::ledState);
         digitalWrite(LED_RED_PIN, ledPara::ledState);
+    }
+  //蓝灯逻辑:达到设定点后常量（由按钮处理函数关闭）
+    if (heatingPara::tempSetpointCnt>=10){
+        digitalWrite(LED_BLUE_PIN, HIGH);
     }
 }
 /*加热PWM输出+串口打印函数*/
@@ -208,11 +208,9 @@ void controlHeating() {
     float currentTemp = readTemperature(1000);
     int dutyRatioInt = heatingPara::HeatPID.compute(currentTemp);
     analogWrite(HEAT_PIN, dutyRatioInt);
-
-    Serial.print("Current Temp: ");
-    Serial.print(currentTemp);
-    Serial.print(" °C, Target Temp: ");
-    Serial.println(heatingPara::targetTemp);
+    if(abs(currentTemp-heatingPara::targetTemp)<=1&&(heatingPara::tempSetpointCnt<128)){
+      heatingPara::tempSetpointCnt++;//8-bit cnt,避免overflow
+    }
 }
 
 /*初始化*/
@@ -224,7 +222,7 @@ void setup() {
   pinMode(BUTTON_PIN, INPUT);  // 按钮使用外部上拉
   pinMode(LED_GREEN_PIN, OUTPUT);
   pinMode(LED_RED_PIN, OUTPUT);
-  
+  pinMode(LED_BLUE_PIN, OUTPUT);
   digitalWrite(LED_GREEN_PIN, HIGH);//电源指示灯（Green）常亮
   digitalWrite(LED_RED_PIN, LOW);
   digitalWrite(LED_BLUE_PIN, LOW);
@@ -234,8 +232,9 @@ void setup() {
 
 /*主程序*/
 void loop() {
+    controlHeating();
     handleButtonPress();
     updateLEDStatus();
-    controlHeating();
+    
 }
 
