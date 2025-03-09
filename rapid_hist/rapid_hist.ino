@@ -219,10 +219,10 @@
           case FluidState::PUMP_IN:
               if (motorInlet.isIdle()) {// 确保电机完成泵入
                   if(backflow){
-                    FluidState::state = FluidState::BACKFLOW;
+                    state = FluidState::BACKFLOW;
                     motorInlet.start(calculateSteps(1), false);
                   }else{
-                    FluidState::state = FluidState::SOAKING;//浸泡
+                    state = FluidState::SOAKING;//浸泡
                     soakStartTime = millis();//记录浸泡开始时间
                   }
 
@@ -350,7 +350,7 @@
                 break;
             default: break;
         }
-    heatingPara::HeatPID.setTarget(targetTemp);
+    heatingPara::HeatPID.setTarget(heatingPara::targetTemp);
     heatingPara::tempSetpointCnt = 0; // 重置计数
     ledPara::blinkInterval = (heatingPara::targetTemp == 40.0) ? 1000 : 200; // 改变红灯：低温慢闪，高温快闪
     digitalWrite(LED_BLUE_PIN, LOW);//熄灭蓝灯
