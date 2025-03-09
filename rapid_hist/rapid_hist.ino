@@ -1,7 +1,7 @@
 #include <Wire.h>
 #include <math.h>
 #define BOARD_BTN 2        // 板载按钮
-#define STEP_PIN_1 4
+#define STEP_PIN_1 4        //Motor 1
 #define DIR_PIN_1 5
 #define SLP_PIN_1 6 
 #define STEP_PIN_2 7
