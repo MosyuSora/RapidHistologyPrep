@@ -1,39 +1,42 @@
 #include <Wire.h>
 #include <math.h>
-#define BOARD_BTN 2        // 板载按钮
-#define STEP_PIN_1 4        //Motor 1
-#define DIR_PIN_1 5
-#define SLP_PIN_1 6 
-#define STEP_PIN_2 7
-#define LED_BLUE_PIN 8
-#define HEAT_PIN 10         // 加热器 PWM 控制
-#define COOL_PIN 11         // 制冷器 PWM 控制
-#define LED_GREEN_PIN 12    
-#define LED_RED_PIN 13    
-#define DIR_PIN_2 15//A1
-#define SLP_PIN_2 16//A2
-#define THERMISTOR_PIN A3   // 温度传感器模拟输入
-  
-#define FILTER_SIZE 15      // 中值滤波器采样数
+// ========== Pin Definitions ==========
+#define BOARD_BTN 2         // On-board button for user input or control trigger
+#define STEP_PIN_1 4        // Step pin for Motor 1
+#define DIR_PIN_1 5         // Direction pin for Motor 1
+#define SLP_PIN_1 6         // Sleep pin for Motor 1
+#define STEP_PIN_2 7        // Step pin for Motor 2
+#define LED_BLUE_PIN 8      // Blue LED pin
+#define HEAT_PIN 10         // Heater PWM control
+#define COOL_PIN 11         // Cooler PWM control
+#define LED_GREEN_PIN 12    // Green LED pin
+#define LED_RED_PIN 13      // Red LED pin
+#define DIR_PIN_2 15        // Direction pin for Motor 2 (Analog A1)
+#define SLP_PIN_2 16        // Sleep pin for Motor 2 (Analog A2)
+#define THERMISTOR_PIN A3   // Thermistor analog input pin
+#define FILTER_SIZE 15      // Number of samples for median filtering
 
-//=========对象：类===========//
-  /* 中值滤波器类，用于减少模拟信号抖动 */
+// ========== Classes ==========
+/* Median Filter class to reduce signal noise */
   class MedianFilter {
   private:
-      int data[FILTER_SIZE]; // 存储采样数据
-      int index;             // 当前插入位置（本例中未循环使用）
+      int data[FILTER_SIZE]; // Storage for sampling data
+      int index;             // Current insertion index (unused in this version)
+
   public:
       MedianFilter() : index(0) {
           for (int i = 0; i < FILTER_SIZE; i++) {
               data[i] = 0;
           }
       }
+
+      // Perform median filtering on the input samples
       int filter(int samples[]) {
           int sortedData[FILTER_SIZE];
           for (int i = 0; i < FILTER_SIZE; i++) {
               sortedData[i] = samples[i];
           }
-          // 简单排序，取中位数
+          // Simple sorting algorithm to find the median
           for (int i = 0; i < FILTER_SIZE - 1; i++) {
               for (int j = i + 1; j < FILTER_SIZE; j++) {
                   if (sortedData[i] > sortedData[j]) {
@@ -47,14 +50,15 @@
       }
   };
 
-  /* PID 控制器类 */
+  /* PID Controller class */
   class PIDController {
   private:
-      float Kp, Ki, Kd;    // PID 参数
-      float setpoint;      // 目标温度
-      float sumError;     // 积分累计
-      float lastError;    // 上一次误差（用于微分项）
-      float dutyRatio;
+      float Kp, Ki, Kd;     // PID constants
+      float setpoint;       // Target temperature 
+      float sumError;       // Integral sum
+      float lastError;      // Last error value (for derivative calculation)
+      float dutyRatio;      // PWM duty ratio for debugging
+
   public:
       PIDController(float kp, float ki, float kd, float target)
         : Kp(kp), Ki(ki), Kd(kd), setpoint(target), sumError(0), lastError(0) ,dutyRatio(0){}
@@ -65,11 +69,12 @@
         lastError = 0;
       }
 
+      // Calculate PID output based on the current temperature
       int compute(float temperature) {
         float error = setpoint - temperature;
         float P_out = Kp * error;
-        float maxIntegral = 100;  // 设定一个合适的积分上限
-        if (abs(error) < 1.0) {  // 误差足够小时，才允许积分作用
+        float maxIntegral = 150;  // Maximum integral limit
+        if (abs(error) < 5.0) {   // Only accumulate integral for small errors
           sumError += error;
           sumError = constrain(sumError, -maxIntegral, maxIntegral);
         }   
@@ -79,53 +84,58 @@
         float output = constrain(P_out + I_out + D_out, 0, 255);
         lastError = error;
 
-        // 调试输出占空比百分比
-        dutyRatio = 100 * output / 255;
+        dutyRatio = 100 * output / 255;  // Calculate duty ratio for debugging
         return (int)output;
       }
+
       void ratioSerialPrint(){
         Serial.print("Duty Ratio: ");
         Serial.println(dutyRatio);
       }
+
   };
-  /*步进电机类*/
+
+  /* Stepper Motor control class */
   class stepMotor {
   private:
-      int stepPin, dirPin, slpPin;
-      int stepDelay;
-      unsigned long lastStepTime;
-      int currentStep, totalSteps;
-      bool stepHigh;
-      bool running;
+        int stepPin, dirPin, slpPin;  // Pins for stepping, direction, and sleep control
+        int stepDelay;                // Delay between steps in microseconds
+        unsigned long lastStepTime;   // Timestamp of the last step taken
+        int currentStep, totalSteps;  // Current and total steps for movement
+        bool stepHigh;                // State of the step pin (HIGH or LOW)
+        bool running;                 // Indicates if the motor is running
 
   public:
+      // Constructor to initialize motor pins and delay
       stepMotor(int step, int dir, int slp, int delayMicros)
           : stepPin(step), dirPin(dir), slpPin(slp), stepDelay(delayMicros),
             lastStepTime(0), currentStep(0), totalSteps(0), stepHigh(false), running(false) {}
 
-      void start(int steps, bool forward) {//forward控制正反转（true 为正，false为反)
+      // Start motor movement for a specific number of steps and direction
+      // 'forward' controls the rotation direction (true for forward, false for reverse)
+      void start(int steps, bool forward) {
           totalSteps = steps;
           currentStep = 0;
           running = true;
 
-          digitalWrite(dirPin, forward ? HIGH : LOW);
-          digitalWrite(slpPin, HIGH);
+          digitalWrite(dirPin, forward ? HIGH : LOW); // Set rotation direction
+          digitalWrite(slpPin, HIGH);                 // Wake up the motor
       }
-
+          
+      // Update motor position based on timing
       void update() {
-          if (!running) return;
-
+          if (!running) return;                       // Exit if the motor is not running
           unsigned long now = micros();
-          if (now - lastStepTime >= stepDelay) {
+          if (now - lastStepTime >= stepDelay) {      // Check if it's time for the next step
               lastStepTime = now;
               digitalWrite(stepPin, stepHigh ? HIGH : LOW);
               stepHigh = !stepHigh;
 
-              if (!stepHigh) {  // 下降沿计步
+              if (!stepHigh) {                       // Increment step count on falling edge
                   currentStep++;
-                  if (currentStep >= totalSteps) {
+                  if (currentStep >= totalSteps) {   // Stop when target steps are reached
                       running = false;
-                      digitalWrite(slpPin, LOW);
+                      digitalWrite(slpPin, LOW);     // Put the motor back to sleep
                   }
               }
           }
@@ -134,192 +144,209 @@
       bool isIdle() { return !running; }
 };
 
-//=========对象：名称空间（全局变量）===========//
-  /*加热相关全局变量名称空间*/
+// ========== Namespace for Global Variables ==========
+/* Namespace for heating-related global variables */
   namespace heatingPara{
-    float targetTemp = 40.0; // 初始目标温度
-    uint16_t tempSetpointCnt = 0;//用于温度达成判断逻辑
-    float p = 15, i = 0.02, d = 0.5;
-    PIDController HeatPID(p, i, d, targetTemp);//实例化类
-
+    float targetTemp = 40.0;                      // Initial target temperature in degrees Celsius
+    uint16_t tempSetpointCnt = 0;                 // Counter to determine if the target temperature is reached
+    float p = 15, i = 0.02, d = 0.5;              // PID controller constants (Proportional, Integral, Derivative)
+    PIDController HeatPID(p, i, d, targetTemp);   // Instantiate the PID controller with initial parameters
+     // Enumeration for the different phases of the heating process
     enum class Phase { IDLE, HEAT_40, SOAK_40, HEAT_60, SOAK_60, COOL_40 } phase = Phase::IDLE;
-    unsigned long phaseStartTime = 0; // 阶段计时起点
+    unsigned long phaseStartTime = 0; // Initialize to IDLE phase
   }
 
-  /*按钮相关全局变量名称空间*/
+/* Namespace for button control global variables */
   namespace buttonPara{
-    bool lastButtonState = HIGH;
+    bool lastButtonState = HIGH;                  // Track the last state of the button (HIGH for unpressed)
   }
 
-  /*led控制相关全局变量名称空间*/
+/* Namespace for LED control global variables */
   namespace ledPara{
-    unsigned long lastBlinkTime = 0;
-    int blinkInterval = 32767; // 初始极慢闪
-    bool ledState = LOW;
+    unsigned long lastBlinkTime = 0;              // Timestamp of the last LED state change
+    int blinkInterval = 32767;                    // Initial blinking interval for LED (set to very slow)
+    bool ledState = LOW;                          // Current state of the LED (LOW for off)
   }
-  /*流量控制全局变量名称空间 */
+
+ /* Namespace for fluid control global variables */
   namespace fluidPara {
-    //流量计算常数
+    // Constants for fluid volume calculation
       const double pi = M_PI;
-      const double ID = 0.4; // Tubing ID in cm
-      const double TLengthin = 25.0; // Tubing Length in cm for input
-      const double TLengthout = 25.0; // Tubing Length in cm for output
-      const double flow = 3.0/5.0; // Volumetric flow rate in mL/rotation
-    //流体控制状态机
+      const double ID = 0.4;                      // Tubing ID in cm
+      const double TLengthin = 25.0;              // Tubing Length in cm for input
+      const double TLengthout = 25.0;             // Tubing Length in cm for output
+      const double flow = 3.0/5.0;                // Volumetric flow rate in mL/rotation
+
+    // Fluid control state machine definition
+    // System idle
+    // Initial pump preparation
+    // Pumping fluid into the system
+    // Reversing flow for backwash
+    // Soaking phase for fluid interaction
+    // Pumping fluid out of the system
+    // Waiting between cycles
       enum class FluidState {
           IDLE, INIT_PUMP, PUMP_IN, BACKFLOW, SOAKING, PUMP_OUT, WAIT_CYCLE
       } state = FluidState::IDLE;
 
-      int cycleIndex = 0;
-      int steps = 0;
-      bool backflow = false;
-      unsigned long lastTime = 0;
-      unsigned long soakStartTime = 0;
-    //浸泡时间，未来根据串口屏数据动态设置
-      const int soakTimes[8] = {10, 5, 5, 5, 5, 5, 5, 5}; // 每个阶段的浸泡时间（分钟）
+      int cycleIndex = 0;                          // Index to track the current cycle
+      int steps = 0;                               // Steps required for motor to move specific volume
+      bool backflow = false;                       // Indicator if backflow is required in the current cycle
+      unsigned long lastTime = 0;                  // Timestamp for tracking delays in processes
+      unsigned long soakStartTime = 0;             // Timestamp when soaking starts
 
-    //两个电机
+    // Soak times for each stage (modifiable via serial screen in the future)
+    // const int soakTimes[8] = {10, 5, 5, 5, 5, 5, 5, 5}; // 每个阶段的浸泡时间（分钟）
+      const float soakTimes[8] = {0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5}; // Test soak times in minutes
+    // Stepper motor objects for inlet and outlet fluid control
       stepMotor motorInlet(STEP_PIN_1, DIR_PIN_1, SLP_PIN_1, 1750);
       stepMotor motorOutlet(STEP_PIN_2, DIR_PIN_2, SLP_PIN_2, 1750);
   }
 
-//=========函数：试剂泵送和时间管理===========//
-  /* 计算步数 */
+//========= Functions: Fluid Pumping and Time Management ===========
+/* Calculate the number of steps required for a given fluid volume */
   int calculateSteps(float volume) {
-      return ceil(volume / fluidPara::flow) * 800;
+      return ceil(volume / fluidPara::flow) * 800; // Convert volume to motor steps based on flow rate           
   }
 
-  /* 启动液体循环*/
+/* Initiate the fluid pumping cycle */
   void startFluidCycle() {
       if (fluidPara::state == fluidPara::FluidState::IDLE) {
-          fluidPara::state = fluidPara::FluidState::INIT_PUMP;
-          fluidPara::cycleIndex = 0;
-          fluidPara::lastTime = millis();
+          fluidPara::state = fluidPara::FluidState::INIT_PUMP;   // Start with initial pump preparation
+          fluidPara::cycleIndex = 0;                             // Reset cycle index
+          fluidPara::lastTime = millis();                        // Record current time for timing control
       }
   }
 
-  /* 处理液体泵送逻辑（状态机）*/
+/* Process the fluid pumping logic using a state machine */
   void processFluid() {
       using namespace fluidPara;
       unsigned long now = millis();
 
       switch (state) {
           case FluidState::IDLE:
-              return;
+              return;                                           // Do nothing when idle
 
           case FluidState::INIT_PUMP:
+              // Determine steps based on cycle index
               steps = (cycleIndex == 2 || cycleIndex == 4 || cycleIndex == 7 || cycleIndex == 6)
                   ? calculateSteps(1)
                   : calculateSteps(3.14 * pow(ID / 2, 2) * TLengthin + 1);
+              // Determine if backflow is required in the current cycle
               backflow = (cycleIndex == 0 || cycleIndex == 2 || cycleIndex == 4 || cycleIndex == 7);
-              motorInlet.start(steps, true);
-              state = FluidState::PUMP_IN;
+              motorInlet.start(steps, true);                    // Start pumping fluid in
+              state = FluidState::PUMP_IN;                      // Move to pumping-in state
               return;
 
           case FluidState::PUMP_IN:
-              if (motorInlet.isIdle()) {// 确保电机完成泵入
+              if (motorInlet.isIdle()) {                        // Wait until inlet pump is idle
                   if(backflow){
                     state = FluidState::BACKFLOW;
-                    motorInlet.start(calculateSteps(1), false);
+                    motorInlet.start(calculateSteps(1), false); // Initiate backflow by reversing direction
                   }else{
-                    state = FluidState::SOAKING;//浸泡
-                    soakStartTime = millis();//记录浸泡开始时间
+                    state = FluidState::SOAKING;                // Proceed to soaking phase
+                    soakStartTime = millis();                   // Record soaking start time
                   }
 
               }
               return;
 
           case FluidState::BACKFLOW:
-              if (motorInlet.isIdle()) { // 确保电机完成回流
-                state = FluidState::SOAKING;//浸泡
-                soakStartTime = millis();//记录浸泡开始时间
+              if (motorInlet.isIdle()) {                        // Wait until backflow is complete
+                state = FluidState::SOAKING;                    // Proceed to soaking phase
+                soakStartTime = millis();
               } 
               return;
 
           case FluidState::SOAKING:
-              if (now - soakStartTime >= soakTimes[cycleIndex] * 60000) {//当前配方浸泡时间（min)*60s
-                  state = FluidState::PUMP_OUT;
+              // Check if soaking time has elapsed
+              if (now - soakStartTime >= soakTimes[cycleIndex] * 60000) { //current soaking time（min)*60s
+                  state = FluidState::PUMP_OUT;                 // Move to pumping out state
               }
               return;
 
           case FluidState::PUMP_OUT:
+              // Calculate steps to pump out the fluid and initiate the outlet pump
               motorOutlet.start(calculateSteps(3.14 * pow(ID / 2, 2) * TLengthout + 1), true);
-              state = FluidState::WAIT_CYCLE;
-              lastTime = millis();
+              state = FluidState::WAIT_CYCLE;                   // Transition to wait state
+              lastTime = millis();                              // Record the start time of the wait
               return;
 
           case FluidState::WAIT_CYCLE:
-              if (now - lastTime >= 5000) {//5s抽干
+              // Wait for 5 seconds to ensure the system is ready for the next cycle
+              if (now - lastTime >= 5000) {                     //5s
                   cycleIndex++;
                   if (cycleIndex < 8) {
-                      state = FluidState::INIT_PUMP;//还在液体阶段内
-                  } else {//完成8轮试剂后
-                      state = FluidState::IDLE;//回到空闲
-                      heatingPara::phase = heatingPara::Phase::HEAT_60;//温度进入石蜡状态
-                      tempSetInit();
+                      state = FluidState::INIT_PUMP;            // Continue to the next cycle
+                  } else {                                      //After 8 cycles
+                      state = FluidState::IDLE;                 // All cycles completed, go idle
+                      heatingPara::phase = heatingPara::Phase::HEAT_60;// Transition to next heating phase
+                      tempSetInit();                            // Initialize temperature settings for the next phase
                   }
               }
               return;
       }
   }
   
-  /*实时控制电机*/
+/* Real-time motor control function */
   void motorControl(){
-    fluidPara::motorInlet.update();
-    fluidPara::motorOutlet.update();
+    fluidPara::motorInlet.update();                             // Update the inlet motor state
+    fluidPara::motorOutlet.update();                            // Update the outlet motor state
   }
-//=========函数：加热控制全局变量名称空间===========//
-  /*温度ADC采样函数*/
+
+
+//========= Functions: Heating Control and Temperature Sampling ===========//
+/* Temperature ADC sampling function */
   float readTemperature(int sampleInterval = 1000) {
-    // 静态变量保存采样状态（保持多次调用间的状态）
-    static enum { IDLE, SAMPLING, CALCULATING } state = IDLE;
-    static unsigned long lastSampleTime = 0;
-    static int adcIndex = 0;
-    static int adcReadings[FILTER_SIZE];
+    // Static variables to maintain state across function calls
+    static enum { IDLE, SAMPLING, CALCULATING } state = IDLE;   // State machine for sampling
+    static unsigned long lastSampleTime = 0;                    // Timestamp of the last sample
+    static int adcIndex = 0;                                    // Current index for ADC readings
+    static int adcReadings[FILTER_SIZE];                        // Array to store ADC readings for filtering
     
-    // 硬件参数
-    const float knownResistor = 9840.0;
-    const float nominalResistance = 100000.0;
-    const float nominalTemp = 25.0 + 273.15;
-    const float BCoefficient = 3950.0;
-    const float VSupply = 5;
+    // Hardware-specific constants
+    const float knownResistor = 9840.0;                         // Known resistor value in the voltage divider
+    const float nominalResistance = 100000.0;                   // Nominal resistance of thermistor at 25°C
+    const float nominalTemp = 25.0 + 273.15;                    // Nominal temperature in Kelvin
+    const float BCoefficient = 3950.0;                          // Beta coefficient for thermistor calculations
+    const float VSupply = 5;                                    // Supply voltage
 
     switch(state) {
       case IDLE:
+        // Start new sampling cycle if the interval has elapsed
         if (millis() - lastSampleTime >= sampleInterval) {
-          // 启动新采样周期
           state = SAMPLING;
           adcIndex = 0;
-          memset(adcReadings, 0, sizeof(adcReadings));
+          memset(adcReadings, 0, sizeof(adcReadings));          // Clear previous readings
         }
         break;
 
       case SAMPLING:
         if (adcIndex < FILTER_SIZE) {
-          // 非阻塞采样
+          // Perform non-blocking sampling at a 2ms interval
           static unsigned long lastADC = 0;
           if (millis() - lastADC >= 2) {
-            adcReadings[adcIndex++] = analogRead(THERMISTOR_PIN);
+            adcReadings[adcIndex++] = analogRead(THERMISTOR_PIN);// Read ADC value
             lastADC = millis();
           }
         } else {
-          // 采样完成，进入计算
-          state = CALCULATING;
+          state = CALCULATING;                                  // Move to calculation phase once sampling is complete
         }
         break;
 
       case CALCULATING:
-        // 中值滤波计算
+        // Apply median filtering to smooth out noise
         MedianFilter filter;
         int adcVal = filter.filter(adcReadings);
         
-        // 温度计算
+        // Calculate voltage and thermistor resistance
         float readVolt = (adcVal / 1023.0) * VSupply;
         float thermistorR = knownResistor * (readVolt / (VSupply - readVolt));
+        // Calculate temperature using the Steinhart-Hart equation
         float temp = 1.0 / ((log(thermistorR / nominalResistance) / BCoefficient) 
                             + (1.0 / nominalTemp)) - 273.15;
 
-        // 调试输出
+        // Debug output to Serial Monitor
         Serial.print("Raw Voltage: ");
         Serial.println(adcVal);
         Serial.print("Thermistor Resistance: ");
@@ -327,20 +354,26 @@
         Serial.print("Temperature: ");
         Serial.println(temp);
         heatingPara::HeatPID.ratioSerialPrint();
-
-        // 准备下次采样
+        Serial.print("Heating SM number: ");
+        Serial.println(static_cast<int>(heatingPara::phase));
+        Serial.print("Fluid SM number: ");
+        Serial.println(static_cast<int>(fluidPara::state));
+        // Prepare for the next sampling cycle
         state = IDLE;
         lastSampleTime = millis();
-        return temp;  // 返回有效温度值
+        return temp;  // Return calculated temperature
     }
     
-    return -999;  // 采样未完成时返回无效值（需调用方处理）
+    return -999;  // Return an invalid value if sampling is incomplete
   }
-  /*温度重置函数（设定值 显示灯）*/
+
+/* Temperature Reset Function (Set Target and Update Indicators) */
   void tempSetInit(){
+    // If in IDLE phase, initialize to heating phase at 40°C
     if(heatingPara::phase == heatingPara::Phase::IDLE ){
       heatingPara::phase = heatingPara::Phase::HEAT_40;
     }
+    // Set target temperature based on the current heating phase
     switch(heatingPara::phase) {
             case heatingPara::Phase::HEAT_60:
                 heatingPara::targetTemp = 60.0;
@@ -348,52 +381,57 @@
             case heatingPara::Phase::COOL_40:
                 heatingPara::targetTemp = 40.0;
                 break;
-            default: break;
+            default: break;  // No action needed for other phases
         }
-    heatingPara::HeatPID.setTarget(heatingPara::targetTemp);
-    heatingPara::tempSetpointCnt = 0; // 重置计数
-    ledPara::blinkInterval = (heatingPara::targetTemp == 40.0) ? 1000 : 200; // 改变红灯：低温慢闪，高温快闪
-    digitalWrite(LED_BLUE_PIN, LOW);//熄灭蓝灯
+    heatingPara::HeatPID.setTarget(heatingPara::targetTemp); // Update PID controller with the new target temperature
+    heatingPara::tempSetpointCnt = 0;                        // Reset the setpoint counter
+    // Adjust red LED blinking interval based on the temperature target
+    // Slow blink for low temperature (40°C) and fast blink for high temperature (60°C)
+    ledPara::blinkInterval = (heatingPara::targetTemp == 40.0) ? 1000 : 200;
+    // Turn off the blue LED during setup
+    digitalWrite(LED_BLUE_PIN, LOW);
 
   }
 
 
 
-  /*加热PWM输出+串口打印函数*/
+/* Heating Control Function with PWM and Serial Output */
   void heatingControl() {
       using namespace heatingPara;
-    //检查温度
+      // Read the current temperature
       float currentTemp = readTemperature(1000);
-      if (currentTemp == -999) return;
-      if(abs(currentTemp-heatingPara::targetTemp)<=0.2&&(heatingPara::tempSetpointCnt<128)){
-        heatingPara::tempSetpointCnt++;//误差为0.2度时，视为已到达设定点，统计到达次数
+      if (currentTemp == -999) return;                      // Exit if temperature reading is invalid
+      // If the temperature is within ±0.4°C of the target and the counter is below 128, increment the counter
+      if(abs(currentTemp-heatingPara::targetTemp)<=0.4&&(heatingPara::tempSetpointCnt<128)){
+        heatingPara::tempSetpointCnt++;
       }
-    //控制PWM
+      // Compute the PWM output using the PID controller and apply it to the heating element
       int dutyRatioInt = heatingPara::HeatPID.compute(currentTemp);
       analogWrite(HEAT_PIN, dutyRatioInt);      
 
-    //状态机管理
+      // State machine to manage the heating process phases
       switch(phase) {
           case Phase::HEAT_40:
-              if (tempSetpointCnt >= 10) { // 稳定在40℃
+              if (tempSetpointCnt >= 10) {                  // Transition to soaking phase at 40°
                   phase = Phase::SOAK_40;
               }
               break;
 
           case Phase::SOAK_40:
-              startFluidCycle();//交给processFluid决定是否进入下一个状态
+              startFluidCycle()
               break;
 
           case Phase::HEAT_60:
-              if (tempSetpointCnt >= 10) { // 稳定在60℃
-                  phase = Phase::SOAK_60;
-                  phaseStartTime = millis();
-                  tempSetpointCnt = 0;
+              if (tempSetpointCnt >= 10) {                 
+                  phase = Phase::SOAK_60;                  // Transition to soaking at 60°C
+                  phaseStartTime = millis();               // Record the start time of the phase
+                  tempSetpointCnt = 0;                     // Reset the setpoint counter
               }
               break;
 
           case Phase::SOAK_60:
-              if (millis() - phaseStartTime >= 20*60000) { // 20分钟
+              // If soaking time of 0.5 minutes has elapsed, start cooling phase
+              if (millis() - phaseStartTime >= 0.5*60000) {
                   phase = Phase::COOL_40;
                   tempSetInit();
                   
@@ -402,7 +440,7 @@
 
           case Phase::COOL_40:
               if (tempSetpointCnt >= 10) { 
-                  phase = Phase::IDLE;// 稳定在40℃
+                  phase = Phase::IDLE; // Transition to IDLE once cooling is stabilized at 40°C
                   //ledPara::blinkInterval=32767;
               }
               break;
@@ -414,39 +452,42 @@
   }
 
   
-//=========函数：按钮与指示灯===========//
-  /*按钮处理函数*/
+//========= Functions: Button and LED Indicators ==========//
+/* Button Handling Function */
   void handleButton() {
-    if (heatingPara::phase != heatingPara::Phase::IDLE) return;//非空闲状态直接跳过逻辑
-    bool reading = digitalRead(BOARD_BTN);
-    if (reading == LOW && buttonPara::lastButtonState == HIGH) {//posEdge
+    // Skip logic if the current phase is not IDLE
+    if (heatingPara::phase != heatingPara::Phase::IDLE) return;
+    bool reading = digitalRead(BOARD_BTN);                // Read the current button state
+    // If button press is detected (positive edge detection)
+    if (reading == LOW && buttonPara::lastButtonState == HIGH) {
         tempSetInit();
     }
-    buttonPara::lastButtonState = reading;
+    buttonPara::lastButtonState = reading;                // Update the last button state
   }
 
-  /*控制 LED 闪烁函数*/
+/* LED Status Control Function */
   void updateLEDStatus() {
-    //红灯逻辑：根据给的blinkInterval闪烁
       unsigned long currentMillis = millis();
       unsigned long halfInterval = ledPara::blinkInterval / 2; 
+      // Red LED Logic: Blink based on configured interval (slow for low temp, fast for high temp)
       if (currentMillis - ledPara::lastBlinkTime >= halfInterval) {
           ledPara::lastBlinkTime = currentMillis;
           ledPara::ledState = !(ledPara::ledState);
           digitalWrite(LED_RED_PIN, ledPara::ledState);
       }
-    //蓝灯逻辑:达到设定点后常量（由handleButton()函数关闭）
-      if (heatingPara::tempSetpointCnt>=10){//在heatingControl中，连续计数十次，视为到达设定点，蓝灯亮
+      // Blue LED Logic: Turn on when temperature reaches the setpoint for ten consecutive counts
+      if (heatingPara::tempSetpointCnt>=10){
           digitalWrite(LED_BLUE_PIN, HIGH);
       }
-    //绿灯逻辑：是电源指示灯 保持常亮 在setup阶段已被设置（后续可以搭建电流采样电路增加报错逻辑）
+      // Green LED Logic: Indicates power status, stays constantly on (configured during setup)
   }
 
 
 
-//=========主程序===========//
-/*初始化*/
+//========= Main Program ==========//
+/* Initialization */
 void setup() {
+  // Initialize motor control pins
   pinMode(STEP_PIN_1, OUTPUT);
   pinMode(DIR_PIN_1, OUTPUT);
   pinMode(SLP_PIN_1, OUTPUT);
@@ -454,28 +495,33 @@ void setup() {
   pinMode(DIR_PIN_2, OUTPUT);
   pinMode(SLP_PIN_2, OUTPUT);
   
+  // Initialize heating and cooling control pins
   pinMode(HEAT_PIN, OUTPUT);
   pinMode(COOL_PIN, OUTPUT);
   pinMode(THERMISTOR_PIN, INPUT);
-  pinMode(BOARD_BTN, INPUT);  // 按钮使用外部上拉
+  pinMode(BOARD_BTN, INPUT);          // puse button uses pull up resistor
+
+  // Initialize LED indicator pins
   pinMode(LED_GREEN_PIN, OUTPUT);
   pinMode(LED_RED_PIN, OUTPUT);
   pinMode(LED_BLUE_PIN, OUTPUT);
 
-  digitalWrite(LED_GREEN_PIN, HIGH);//电源指示灯（Green）常亮
+  // Set initial LED states
+  digitalWrite(LED_GREEN_PIN, HIGH); // Green LED stays ON to indicate power status
   digitalWrite(LED_RED_PIN, LOW);
   digitalWrite(LED_BLUE_PIN, LOW);
-  //串口波特率
+
+  // Begin serial communication at 9600 baud rate
   Serial.begin(9600);
 }
 
-/*主程序*/
+/* Main Loop */
 void loop() {
-    handleButton();
-    processFluid();
-    heatingControl();
-    motorControl();
-    updateLEDStatus();
+    handleButton();                  // Manage button presse
+    processFluid();                  // Handle fluid control and state management
+    heatingControl();                // Manage heating using PID control
+    motorControl();                  // Update motor status and steps
+    updateLEDStatus();               // Update LED indicators based on system states
     
 }
 
