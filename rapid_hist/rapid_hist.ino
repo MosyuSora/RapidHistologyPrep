@@ -148,6 +148,7 @@
 /* Namespace for heating-related global variables */
   namespace heatingPara{
     float targetTemp = 40.0;                      // Initial target temperature in degrees Celsius
+    float tempTol = 0.4;
     uint16_t tempSetpointCnt = 0;                 // Counter to determine if the target temperature is reached
     float p = 15, i = 0.02, d = 0.5;              // PID controller constants (Proportional, Integral, Derivative)
     PIDController HeatPID(p, i, d, targetTemp);   // Instantiate the PID controller with initial parameters
@@ -234,7 +235,7 @@
                   : calculateSteps(3.14 * pow(ID / 2, 2) * TLengthin + 1);
               // Determine if backflow is required in the current cycle
               backflow = (cycleIndex == 0 || cycleIndex == 2 || cycleIndex == 4 || cycleIndex == 7);
-              motorInlet.start(steps, true);                    // Start pumping fluid in
+              motorInlet.start(steps, false);                    // Start inlet motor clockwise
               state = FluidState::PUMP_IN;                      // Move to pumping-in state
               return;
 
@@ -242,7 +243,7 @@
               if (motorInlet.isIdle()) {                        // Wait until inlet pump is idle
                   if(backflow){
                     state = FluidState::BACKFLOW;
-                    motorInlet.start(calculateSteps(1), false); // Initiate backflow by reversing direction
+                    motorInlet.start(calculateSteps(1), true); //Start inlet Motor counter-clockwise
                   }else{
                     state = FluidState::SOAKING;                // Proceed to soaking phase
                     soakStartTime = millis();                   // Record soaking start time
@@ -262,14 +263,16 @@
               // Check if soaking time has elapsed
               if (now - soakStartTime >= soakTimes[cycleIndex] * 60000) { //current soaking time（min)*60s
                   state = FluidState::PUMP_OUT;                 // Move to pumping out state
+                  motorOutlet.start(calculateSteps(3.14 * pow(ID / 2, 2) * TLengthout + 1), true);//start outlet motor
               }
               return;
 
           case FluidState::PUMP_OUT:
               // Calculate steps to pump out the fluid and initiate the outlet pump
-              motorOutlet.start(calculateSteps(3.14 * pow(ID / 2, 2) * TLengthout + 1), true);
-              state = FluidState::WAIT_CYCLE;                   // Transition to wait state
-              lastTime = millis();                              // Record the start time of the wait
+              if(motorOutlet.isIdle()){
+                  state = FluidState::WAIT_CYCLE;                   // Transition to wait state
+                  lastTime = millis();                              // Record the start time of the wait
+              }
               return;
 
           case FluidState::WAIT_CYCLE:
@@ -377,9 +380,11 @@
     switch(heatingPara::phase) {
             case heatingPara::Phase::HEAT_60:
                 heatingPara::targetTemp = 60.0;
+                heatingPara::tempTol = 1.0;
                 break;
             case heatingPara::Phase::COOL_40:
                 heatingPara::targetTemp = 40.0;
+                heatingPara::tempTol = 0.4;
                 break;
             default: break;  // No action needed for other phases
         }
@@ -402,7 +407,7 @@
       float currentTemp = readTemperature(1000);
       if (currentTemp == -999) return;                      // Exit if temperature reading is invalid
       // If the temperature is within ±0.4°C of the target and the counter is below 128, increment the counter
-      if(abs(currentTemp-heatingPara::targetTemp)<=0.4&&(heatingPara::tempSetpointCnt<128)){
+      if(abs(currentTemp-heatingPara::targetTemp)<=heatingPara::tempTol&&(heatingPara::tempSetpointCnt<128)){
         heatingPara::tempSetpointCnt++;
       }
       // Compute the PWM output using the PID controller and apply it to the heating element
@@ -418,7 +423,7 @@
               break;
 
           case Phase::SOAK_40:
-              startFluidCycle()
+              startFluidCycle();
               break;
 
           case Phase::HEAT_60:
@@ -461,6 +466,7 @@
     // If button press is detected (positive edge detection)
     if (reading == LOW && buttonPara::lastButtonState == HIGH) {
         tempSetInit();
+        digitalWrite(LED_BLUE_PIN, LOW);
     }
     buttonPara::lastButtonState = reading;                // Update the last button state
   }
@@ -509,7 +515,7 @@ void setup() {
   // Set initial LED states
   digitalWrite(LED_GREEN_PIN, HIGH); // Green LED stays ON to indicate power status
   digitalWrite(LED_RED_PIN, LOW);
-  digitalWrite(LED_BLUE_PIN, LOW);
+  digitalWrite(LED_BLUE_PIN, HIGH);//Blue LED:Press button ready.
 
   // Begin serial communication at 9600 baud rate
   Serial.begin(9600);
