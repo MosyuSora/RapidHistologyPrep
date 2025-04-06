@@ -187,6 +187,7 @@ For each pumping of each reagent, because there's distance between container and
 $$
 V_{dead}=\pi{(\frac{D_i}{2})}^2L
 $$
+
 Where D is inner diameter of tube. And L is tube length.
 
 Besides, backflow is necessary in the fluid management task. It refers to the intentional reversal of fluid flow to prevent leakage, ensure precise volume control, and eliminate residual liquid or air bubbles. Therefore, you can find related logic in the fluid control implementation.
