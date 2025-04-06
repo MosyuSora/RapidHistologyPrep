@@ -118,10 +118,8 @@ $$
 a=-0.410963,b=23.007500,c=-511.787183,d=5660.766498,e=-31182.521670,f=68609.215924
 $$
 
-You can click [here](https://github.com/MosyuSora/RapidHistologyPrep/blob/main/rapid_hist/Reference/calibration/Calibration%20of%20NTC%20Thermistor.md) to find out where this equation comes from.
-- 
+ - you can click [here](https://github.com/MosyuSora/RapidHistologyPrep/blob/main/rapid_hist/Reference/calibration/Calibration%20of%20NTC%20Thermistor.md) to find out where this equation comes from.
 
-At `25℃` our thermistor has `R = 100Kohm` and `B = 3950 K`.
 
 ##### Filtering
 
