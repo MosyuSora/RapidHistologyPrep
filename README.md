@@ -112,6 +112,7 @@ $$
 $$
 T=a⋅ln(R)^5+b⋅ln(R)^4+c⋅ln(R)^3+d⋅ln(R)^2+e⋅ln(R)+f
 $$
+
 Where
 
 $$
