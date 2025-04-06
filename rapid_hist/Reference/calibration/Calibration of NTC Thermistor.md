@@ -10,10 +10,13 @@ To achieve a more accurate temperature-resistance relationship, we placed a ther
 #### 1st-order Logarithmic Polynomial
 
 Fitting form:
+
 $$
 T=a⋅ln(R)+b
 $$
+
 Fitted parameters:
+
 $$
 a = -19.377573,b = 245.901173
 $$
@@ -21,10 +24,13 @@ $$
 #### 3rd-order Logarithmic Polynomial
 
 Fitting form:
+
 $$
 T=a⋅ln(R)^3+b⋅ln(R)^2+c⋅ln(R)+d
 $$
+
 Fitted parameters:
+
 $$
 𝑎=1.260494,𝑏=−37.085894,𝑐=341.676840,d=−916.389987
 $$
@@ -64,6 +70,7 @@ This is the classic thermistor model based on the β-parameter found in datashee
 $$
 \frac{1}{T}- \frac{1}{T_{\text{nominal}}}={\frac{1}{B} }\ln\left(\frac{R_{\text{thermistor}}}{R_{\text{nominal}}}\right)
 $$
+
 Parameters used:
 
 $$
