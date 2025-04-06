@@ -8,12 +8,12 @@
 
 
 /*Median filter to reduce voltage jitter*/
-class MedianFilter {
+class medianFilter {
 private:
     int data[FILTER_SIZE]; // array to save data
     int index;             // currunt inserting
 public:
-    MedianFilter() : index(0) {
+    medianFilter() : index(0) {
         // initialize
         for (int i = 0; i < FILTER_SIZE; i++) {
             data[i] = 0;
@@ -42,7 +42,7 @@ public:
     }
 };
 
-class PIDController {
+class pidController {
 private:
   // PID Parameters
   float Kp, Ki, Kd;
@@ -54,7 +54,7 @@ private:
 
 public:
   // Constructor
-  PIDController(float kp, float ki, float kd, float target)
+  pidController(float kp, float ki, float kd, float target)
     : Kp(kp), Ki(ki), Kd(kd), setpoint(target), sum_error(0), last_error(0) {}
 
   // Set of Target
@@ -105,7 +105,7 @@ float readTemperature(int sampleInterval = 1000) {
   int adcVoltage; 
   int adcReadings[FILTER_SIZE];
   float readVolt,thermistorResistance,temperature;
-  static MedianFilter medianFilter;
+  static medianFilter medianFilter;
  for (int i = 0; i < FILTER_SIZE; i++) {
         adcReadings[i] = analogRead(THERMISTOR_PIN);
         delay(2);
@@ -141,7 +141,7 @@ void loop() {
   float targetTemp = 42;
   float currentTemp = readTemperature(1000);//interval:0.1s
   float p(15),i(0.02),d(0.5);//Hyperparameters p,i,d
-  PIDController HeatPID = PIDController(p,i,d,targetTemp);
+  pidController HeatPID = pidController(p,i,d,targetTemp);
   while (1) {
     currentTemp = readTemperature(1000);
     int dutyRatioInt=HeatPID.compute(currentTemp);

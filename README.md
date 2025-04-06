@@ -19,7 +19,7 @@ This project is a small & rapid histology preparation system, an Arduino-based s
 - **Indicators**
   - 3-color RGB LED (Red/Green/Blue)
 - **HMI**
-  - A DWIN serial LCD screen.
+  - A Nextion serial LCD screen.
 
 - **Power Supply**
   - 12V 10A 3-socket DC PSU(for heater, cooler)
@@ -127,7 +127,7 @@ So for signals that frequency > 4.82 Hz will get filtered.
 
 Also a median digital filter is adding to code to get precise temperature reading. For this, we repeat sampling for 15 times with 2ms interval. The final temperature could be described as:
 
- 
+
 $$
 t_r[n]=median({t[n−14],t[n−13],…,t[n]})
 $$
@@ -483,9 +483,11 @@ Here is a flowchart describing transfer of state for each state machine. This wi
 
 ![Image](https://github.com/MosyuSora/RapidHistologyPrep/blob/main/flowChart.png?raw=true)
 
-## Teams and Contributor
+## Teams and Contribution
 
+Luyu Yang - Code structuring, Control system design, Circuit design, PCB design, GUI design, Coding, Debugging, and Documenting
 
+Wei Zhang - Coding, Testing, Debugging, and Documenting
 
 
 
