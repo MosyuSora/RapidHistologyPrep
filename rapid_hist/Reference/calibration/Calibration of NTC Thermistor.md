@@ -69,7 +69,7 @@ Based on the measured data and the fitting models above, we generated the follow
 
 | R-T Curve                                                    | Error-T Curve                                                |
 | ------------------------------------------------------------ | ------------------------------------------------------------ |
-| ![r-t curve](C:\Users\mosyu\Desktop\rapid_hist_prep\heatonly\rapid_hist\Reference\calibration\r-t curve.png) | ![error](C:\Users\mosyu\Desktop\rapid_hist_prep\heatonly\rapid_hist\Reference\calibration\error.png) |
+| ![r-t curve](https://github.com/MosyuSora/RapidHistologyPrep/blob/main/rapid_hist/Reference/calibration/r-t%20curve.png?raw=true) | ![error](https://github.com/MosyuSora/RapidHistologyPrep/blob/main/rapid_hist/Reference/calibration/error.png?raw=true) |
 
 Additionally, we obtained the following error metrics table:
 
