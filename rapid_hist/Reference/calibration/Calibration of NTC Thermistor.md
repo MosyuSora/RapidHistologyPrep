@@ -2,7 +2,7 @@
 
 ### Methodology
 
-To achieve a more accurate temperature-resistance relationship, we placed a thermocouple thermometer alongside the NTC thermistor at the same location and conducted calibration within the device's operating temperature range. The recorded data is shown in the following table.
+To achieve a more accurate temperature-resistance relationship, we placed a thermocouple thermometer alongside the NTC thermistor at the same location and conducted calibration within the device's operating temperature range. The recorded data is shown in the following ![table](https://github.com/MosyuSora/RapidHistologyPrep/blob/main/rapid_hist/Reference/calibration/ntc.csv).
  We then applied four fitting models: first-order, third-order, fifth-order logarithmic polynomials, and a log-linear model. For comparison, we also evaluated the standard **β-parameter model** provided in the thermistor datasheet.
 
 ### Fitting Curve and Parameters
@@ -32,10 +32,13 @@ $$
 #### 5th-order Logarithm Polynomial
 
 Fitting form:
+
 $$
 T=a⋅ln(R)^5+b⋅ln(R)^4+c⋅ln(R)^3+d⋅ln(R)^2+e⋅ln(R)+f
 $$
+
 Fitted parameters:
+
 $$
 a=-0.410963,b=23.007500,c=-511.787183,d=5660.766498,e=-31182.521670,f=68609.215924
 $$
@@ -43,10 +46,13 @@ $$
 #### Log-linear Model
 
 Fitting form:
+
 $$
 T=\frac{ln(R)-a}{b}
 $$
+
 Fitted parameters:
+
 $$
 𝑎=12.674620,𝑏=−0.051245
 $$
@@ -59,6 +65,7 @@ $$
 \frac{1}{T}- \frac{1}{T_{\text{nominal}}}={\frac{1}{B} }\ln\left(\frac{R_{\text{thermistor}}}{R_{\text{nominal}}}\right)
 $$
 Parameters used:
+
 $$
 R = 100K\Omega,B = 3950 K, T_{nominal}=275.15K-25K=250.15K
 $$
