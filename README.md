@@ -89,9 +89,11 @@ Here is how the temperature is obtained based on selected thermistor.
 
 - Calculate the voltage divided by the thermistor
 
+
 $$
 V_{\text{thm}} = \left(\frac{\text{V}_{read}}{2^{10}-1}\right) \times V_{\text{Supply}}
 $$
+
 
 - Calculate resistance of thermistor
 
