@@ -91,7 +91,7 @@ Here is how the temperature is obtained based on selected thermistor.
 
 
 $$
-V_{\text{thm}} = \left(\frac{\text{V}_{read}}{2^{10}-1}\right) \times V_{\text{Supply}}
+V_{\text{thm}} = \left(\frac{\text{V}_ {read}}{2^{10}-1} \right) \times V_{\text{Supply}}
 $$
 
 
