@@ -3,13 +3,14 @@
 #include "config.h"
 #include "serial_lcd.h"
 #include "system_control.h"
+#include "fluid.h"
 using namespace heatingPara;
 using namespace ledPara;
 
 namespace heatingPara{
-  float targetTemp = 40.0;                      // Initial target temperature in degrees Celsius
+  float targetTemp = 0.0;                      // Initial target temperature in degrees Celsius
   float tempTol = 0.4;
-  float currentTemp = 0;
+  float currentTemp = 0.0;
   uint16_t tempSetpointCnt = 0;                 // Counter to determine if the target temperature is reached
   pidController HeatPID =pidController(K_P, K_I, K_D, targetTemp);   // Instantiate the PID controller with initial parameters
   unsigned long phaseStartTime = 0; // Initialize to IDLE phase
@@ -18,7 +19,8 @@ namespace heatingPara{
 }
 
 void tempSetInit() {
-  if (phase == Phase::IDLE) {
+  if(targetTemp == 0.0){
+    targetTemp == 40.0;
     phase = Phase::HEAT_40;
   }
 
@@ -66,14 +68,11 @@ void heatingControl() {
         phase = Phase::SOAK_40;
         phaseStartTime = millis();
         tempSetpointCnt = 0;
+        startFluidCycle();
       }
       break;
 
     case Phase::SOAK_40:
-      if (millis() - phaseStartTime >= 2 * 60000) {  // 2 分钟
-        phase = Phase::HEAT_60;
-        tempSetpointCnt = 0;
-      }
       break;
 
     case Phase::HEAT_60:
