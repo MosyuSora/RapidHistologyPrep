@@ -53,10 +53,10 @@ void processFluid() {
       return;
 
     case FluidState::INIT_PUMP:
-      steps = (cycleIndex == 2 || cycleIndex == 4 || cycleIndex == 7 || cycleIndex == 6)
-              ? calculateSteps(1)
-              : calculateSteps(pi * pow(ID / 2, 2) * TLengthin + 1);
-      backflow = (cycleIndex == 0 || cycleIndex == 2 || cycleIndex == 4 || cycleIndex == 7);
+      steps = (cycleIndex == 0 || cycleIndex == 1 || cycleIndex == 3 || cycleIndex == 6)
+              ? calculateSteps(recipe.recipe[cycleIndex].volume)
+              : calculateSteps(recipe.recipe[cycleIndex].volume+recipe.recipe[cycleIndex].deadVolume);
+      backflow = (cycleIndex == 0 || cycleIndex == 1 || cycleIndex == 3 || cycleIndex == 6);
       motorInlet.start(steps, false);
       state = FluidState::PUMP_IN;
       return;
@@ -65,7 +65,7 @@ void processFluid() {
       if (motorInlet.isIdle()) {
         if (backflow) {
           state = FluidState::BACKFLOW;
-          motorInlet.start(calculateSteps(1), true);
+          motorInlet.start(steps, true);
         } else {
           state = FluidState::SOAKING;
           soakStartTime = millis();
@@ -83,7 +83,7 @@ void processFluid() {
     case FluidState::SOAKING:
       if (now - soakStartTime >= recipe.recipe[cycleIndex].time * 60000) {
         state = FluidState::PUMP_OUT;
-        motorOutlet.start(calculateSteps(pi * pow(ID / 2, 2) * TLengthout + 1), true);
+        motorOutlet.start(calculateSteps(15.0), true);
       }
       return;
 
