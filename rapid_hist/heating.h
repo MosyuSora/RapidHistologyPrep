@@ -21,12 +21,15 @@ namespace heatingPara {
   enum class Phase { IDLE, HEAT_40, SOAK_40, HEAT_60, SOAK_60, COOL_40 };
   extern Phase phase;
   extern unsigned long phaseStartTime;
+  extern unsigned long lastToggle;
+  extern bool pwmState;
 
 }
 
 
 void tempSetInit();
 void heatingControl();
+void lowFreqPWM();
 
 // external function
 void startFluidCycle();

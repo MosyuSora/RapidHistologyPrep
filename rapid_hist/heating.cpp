@@ -16,11 +16,37 @@ namespace heatingPara{
   unsigned long phaseStartTime = 0; // Initialize to IDLE phase
   float heatPwr = HeatPID.getHeatPwr();
   Phase phase = Phase::IDLE;
+  unsigned long lastToggle = 0;
+  bool pwmState = false;
 }
 
+void lowFreqPWM(int pin, int dutyRatio) {
+  const int period = 100; 
+  unsigned long currentMillis = millis();
+
+  int onTime = period * dutyRatio / 255;
+  int offTime = period - onTime;
+
+  static int currentState = LOW;
+  static unsigned long interval = onTime;
+
+  if (currentMillis - lastToggle >= interval) {
+    lastToggle = currentMillis;
+
+    if (currentState == HIGH) {
+      currentState = LOW;
+      interval = offTime;
+    } else {
+      currentState = HIGH;
+      interval = onTime;
+    }
+
+    digitalWrite(pin, currentState);
+  }
+}
 void tempSetInit() {
-  if(targetTemp == 0.0){
-    targetTemp == 40.0;
+  if(phase == Phase::IDLE){
+    targetTemp = 40.0;
     phase = Phase::HEAT_40;
   }
 
@@ -60,7 +86,8 @@ void heatingControl() {
   }
 
   int dutyRatioInt = HeatPID.compute(currentTemp);
-  analogWrite(HEAT_PIN, dutyRatioInt);
+
+  lowFreqPWM(HEAT_PIN, dutyRatioInt);
 
   switch (phase) {
     case Phase::HEAT_40:
@@ -84,7 +111,7 @@ void heatingControl() {
       break;
 
     case Phase::SOAK_60:
-      if (millis() - phaseStartTime >= 0.5 * 60000) {  // 30 秒
+      if (millis() - phaseStartTime >= 20 * 60000) {  // 20min
         phase = Phase::COOL_40;
         tempSetpointCnt = 0;
       }
