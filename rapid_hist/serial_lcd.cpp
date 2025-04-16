@@ -1,4 +1,7 @@
 #include "serial_lcd.h"
+#include "heating.h"
+#include "fluid.h"
+#include "recipe.h"
 
 serialLCD::serialLCD()
   : reagentStage("IDLE"), formInfo("Not selected"), pumpInfo("IDLE"),
@@ -48,7 +51,55 @@ void serialLCD::updateFrame() {
   }
 }
 
-// 全局 LCD 对象
+void updateLCD(){
+  String pumpInfo;
+  switch(fluidPara::state){
+    case fluidPara::FluidState::PUMP_IN:
+      pumpInfo = "Inlet Pump-in ";
+      pumpInfo += String(fluidPara::recipe.recipe[fluidPara::cycleIndex].volume,2);
+      pumpInfo += " mL";
+      break;
+
+    case fluidPara::FluidState::BACKFLOW:
+      pumpInfo = "Inlet Back-flow";
+      break;
+    case fluidPara::FluidState::PUMP_OUT:
+      pumpInfo = "Outlet Pump-out 15 mL";
+      break;
+    case fluidPara::FluidState::SOAKING:
+      pumpInfo = "Soaking now, remaining ";
+      pumpInfo += String((ceil(60000*(fluidPara::recipe.recipe[fluidPara::cycleIndex].time))-(millis()-fluidPara::soakStartTime))/1000,0);
+      pumpInfo += " s";
+      break;
+    default:
+      pumpInfo = "IDLE";
+      if(heatingPara::phase==heatingPara::Phase::HEAT_40){
+        pumpInfo +=", wait for 40C heating";
+      }
+      if(heatingPara::phase==heatingPara::Phase::HEAT_60){
+        pumpInfo +=", wait for 60C heating";
+      }
+      if(heatingPara::phase==heatingPara::Phase::COOL_40){
+        pumpInfo +=", wait for 40C cooldown";
+      }
+      if(heatingPara::phase==heatingPara::Phase::SOAK_60){
+        pumpInfo = "Soaking now, remaining ";
+        pumpInfo += String((60000*20-(millis()-heatingPara::phaseStartTime))/60000,2);
+        pumpInfo += " min";
+      }
+      break;
+  }
+  
+  lcdPara::lcd.setSetTemp(ceil(heatingPara::targetTemp));
+  lcdPara::lcd.setNowTemp(ceil(heatingPara::currentTemp));
+  lcdPara::lcd.setHeatPower(heatingPara::HeatPID.getHeatPwr());
+  lcdPara::lcd.setFormInfo(fluidPara::recipe.recipeName);
+  lcdPara::lcd.setReagentStage(fluidPara::recipe.recipe[fluidPara::cycleIndex].reagentName);
+  lcdPara::lcd.setPumpInfo(pumpInfo);
+  lcdPara::lcd.updateFrame();
+}
+
+
 namespace lcdPara {
   serialLCD lcd;
 }

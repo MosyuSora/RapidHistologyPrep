@@ -21,6 +21,8 @@ namespace heatingPara{
 }
 
 void lowFreqPWM(int pin, int dutyRatio) {
+  using namespace heatingPara;
+  using namespace ledPara;
   const int period = 100; 
   unsigned long currentMillis = millis();
 
@@ -45,6 +47,8 @@ void lowFreqPWM(int pin, int dutyRatio) {
   }
 }
 void tempSetInit() {
+  using namespace heatingPara;
+  using namespace ledPara;
   if(phase == Phase::IDLE){
     targetTemp = 40.0;
     phase = Phase::HEAT_40;
@@ -57,7 +61,7 @@ void tempSetInit() {
       break;
     case Phase::HEAT_60:
       targetTemp = 60.0;
-      tempTol = 1.0;
+      tempTol = 1.5;
       break;
     case Phase::COOL_40:
       targetTemp = 40.0;
@@ -69,20 +73,17 @@ void tempSetInit() {
 
   HeatPID.setTarget(targetTemp);
   tempSetpointCnt = 0;
-
   blinkInterval = (targetTemp == 40.0) ? 1000 : 200;
 }
 
 void heatingControl() {
+  using namespace heatingPara;
+  using namespace ledPara;
   currentTemp = readTemperature(1000);
   heatPwr = HeatPID.getHeatPwr();
 
-  if (currentTemp == -999) return;
-
   if (abs(currentTemp - targetTemp) <= tempTol && tempSetpointCnt < 128) {
     tempSetpointCnt++;
-  } else {
-    tempSetpointCnt = 0;
   }
 
   int dutyRatioInt = HeatPID.compute(currentTemp);
@@ -90,12 +91,14 @@ void heatingControl() {
   lowFreqPWM(HEAT_PIN, dutyRatioInt);
 
   switch (phase) {
+    case Phase::IDLE:
+      break;
     case Phase::HEAT_40:
       if (tempSetpointCnt >= 10) {
         phase = Phase::SOAK_40;
         phaseStartTime = millis();
-        tempSetpointCnt = 0;
         startFluidCycle();
+        tempSetpointCnt = 0;
       }
       break;
 
@@ -113,7 +116,6 @@ void heatingControl() {
     case Phase::SOAK_60:
       if (millis() - phaseStartTime >= 20 * 60000) {  // 20min
         phase = Phase::COOL_40;
-        tempSetpointCnt = 0;
       }
       break;
 

@@ -32,5 +32,6 @@ class serialLCD {
 namespace lcdPara {
   extern serialLCD lcd;
 }
+void updateLCD();
 
 #endif

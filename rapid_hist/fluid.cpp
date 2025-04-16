@@ -1,7 +1,8 @@
 #include "fluid.h"
 #include "heating.h"  
-using namespace fluidPara;
 
+
+using namespace fluidPara;
 
 namespace fluidPara {
   // Constants for fluid volume calculation
@@ -38,15 +39,14 @@ int calculateSteps(float volume) {
 }
 
 void startFluidCycle() {
-  if (state == FluidState::IDLE) {
     state = FluidState::INIT_PUMP;
     cycleIndex = 0;
     lastTime = millis();
-  }
 }
 
 void processFluid() {
   unsigned long now = millis();
+  using namespace fluidPara;
 
   switch (state) {
     case FluidState::IDLE:
@@ -81,7 +81,7 @@ void processFluid() {
       return;
 
     case FluidState::SOAKING:
-      if (now - soakStartTime >= recipe.recipe[cycleIndex].time * 60000) {
+      if (now - soakStartTime >= ceil(recipe.recipe[cycleIndex].time * 60000)) {
         state = FluidState::PUMP_OUT;
         motorOutlet.start(calculateSteps(15.0), true);
       }
@@ -95,7 +95,7 @@ void processFluid() {
       return;
 
     case FluidState::WAIT_CYCLE:
-      if (now - lastTime >= 5000) {
+      if (now - lastTime >= 3*1000) {
         cycleIndex++;
         if (cycleIndex < 8) {
           state = FluidState::INIT_PUMP;

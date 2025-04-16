@@ -31,10 +31,5 @@ void loop() {
   processFluid();
   motorControl();
   updateLEDStatus();
-  lcdPara::lcd.setSetTemp(ceil(heatingPara::targetTemp));
-  lcdPara::lcd.setNowTemp(ceil(heatingPara::currentTemp));
-  lcdPara::lcd.setHeatPower(heatingPara::HeatPID.getHeatPwr());
-  lcdPara::lcd.setFormInfo(fluidPara::recipe.recipeName);
-  lcdPara::lcd.setReagentStage(fluidPara::recipe.recipe[fluidPara::cycleIndex].reagentName);
-  lcdPara::lcd.updateFrame();
+  updateLCD();
 }
